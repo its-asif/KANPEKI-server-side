@@ -28,6 +28,7 @@ async function run() {
 
     const database = client.db("KanpekiDB");
     const usersCollection = database.collection("users");
+    const animeListCollection = database.collection("animelist");
 
     // Get all users
     app.get('/users', async(req, res) =>{
@@ -35,7 +36,6 @@ async function run() {
         res.send(result);
     })
 
- 
     // create a new user
     app.post('/users', async (req, res) => {
         const userData = {
@@ -54,6 +54,18 @@ async function run() {
         return res.send(result.insertedId);
 
     })
+
+    // create animeList with list name and username, user email, created date with an empty array of animeIds
+    app.post('/animelist', async(req, res) =>{
+        const data = {
+            // listName : 
+        }
+
+        console.log(req.body)
+        console.log(data);
+        res.send("list created");
+    })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
