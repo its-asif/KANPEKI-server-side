@@ -29,6 +29,31 @@ async function run() {
     const database = client.db("KanpekiDB");
     const usersCollection = database.collection("users");
 
+    // Get all users
+    app.get('/users', async(req, res) =>{
+        const result = await usersCollection.find().toArray();
+        res.send(result);
+    })
+
+ 
+    // create a new user
+    app.post('/users', async (req, res) => {
+        const userData = {
+            name: req.body.displayName,
+            email: req.body.email,
+            photo: req.body.photoURL,
+            listIds: [],
+            listedAnimeIds: [],
+        }
+
+        // Check if user exists by email
+        const usr = usersCollection.findOne({email: userData.email});
+        if (usr) return res.send('User already exists');
+
+        const result = await usersCollection.insertOne(userData);
+        return res.send(result.insertedId);
+
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -43,7 +68,7 @@ run().catch(console.dir);
 
 app.get('/', (req, res) => {
     console.log(req);
-    res.send('Hello World!');
+    res.send('Kanpeki server is running');
 });
 
 app.listen(port, () => {
