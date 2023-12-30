@@ -55,15 +55,33 @@ async function run() {
 
     })
 
-    // create animeList with list name and username, user email, created date with an empty array of animeIds
-    app.post('/animelist', async(req, res) =>{
-        const data = {
-            // listName : 
-        }
 
+
+    // get anime list by email
+    app.get('/animelist/:email', async(req, res) =>{
+        const email = req.params.email;
+        const result = await animeListCollection.find({ userEmail : email}).toArray();
+        res.send(result);
+    } ) 
+
+    // create animeList 
+    app.post('/animelist', async(req, res) =>{
         console.log(req.body)
-        console.log(data);
-        res.send("list created");
+        
+        const result = await animeListCollection.insertOne(req.body);
+
+        // update user listIds
+        // find user by email
+        const updatedUser = await usersCollection.updateOne(
+            {email: req.body.userEmail},
+            {$push: {listIds: result.insertedId}}
+            );
+            
+        const userdata = await usersCollection.findOne({email: req.body.userEmail});
+        console.log(userdata);
+
+        // res.send("all good")
+        res.send(result.insertedId );
     })
 
 
