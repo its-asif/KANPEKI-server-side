@@ -57,6 +57,20 @@ async function run() {
 
 
 
+
+    app.get('/animelist', async(req, res) =>{
+        const result = await animeListCollection.find().toArray();
+        console.log(result);
+        res.send(result);
+    })
+    
+    // get public anime list
+    app.get('/animelist/public', async(req, res) =>{
+        const result = await animeListCollection.find({ statusPublic : true}).toArray();
+        // console.log(result);
+        res.send(result);
+    })
+
     // get anime list by email
     app.get('/animelist/:email', async(req, res) =>{
         const email = req.params.email;
@@ -69,6 +83,9 @@ async function run() {
         const result = await animeListCollection.find({_id : new ObjectId(id)}).toArray();
         res.send(result);
     })
+
+
+
 
     // create animeList 
     app.post('/animelist', async(req, res) =>{
@@ -124,6 +141,7 @@ async function run() {
         const result = await animeListCollection.deleteOne({ _id : new ObjectId(id)});
         res.send(result);   
     }) 
+
 
 
     // Send a ping to confirm a successful connection
