@@ -3,7 +3,7 @@ const cors = require('cors');
 const app = express();
 require('dotenv').config();
 const port = 8000;  
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 // middleware
 app.use(cors());
@@ -82,6 +82,27 @@ async function run() {
 
         // res.send("all good")
         res.send(result.insertedId );
+    })
+
+    // update animeList toogle publicStatus
+    app.patch('/animelist/status/:id', async(req, res) =>{ 
+        const id = req.params.id;
+        
+        // result = await animeListCollection.find({ _id : new ObjectId(id)}).toArray();
+        const result = await animeListCollection.updateOne(
+            {_id : new ObjectId(id)},
+            {$set: {statusPublic: !req.body.status}}
+        )
+
+        console.log(result);
+        res.send(result);
+    }) 
+
+    // delete animeList
+    app.delete('/animelist/:id', async(req, res) =>{
+        const id = req.params.id;
+        const result = await animeListCollection.deleteOne({ _id : new ObjectId(id)});
+        res.send(result);   
     })
 
 
