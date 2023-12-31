@@ -63,6 +63,12 @@ async function run() {
         const result = await animeListCollection.find({ userEmail : email}).toArray();
         res.send(result);
     } ) 
+ 
+    app.get('/animelist/id/:id', async(req, res)=>{
+        const id = req.params.id;
+        const result = await animeListCollection.find({_id : new ObjectId(id)}).toArray();
+        res.send(result);
+    })
 
     // create animeList 
     app.post('/animelist', async(req, res) =>{
@@ -98,12 +104,26 @@ async function run() {
         res.send(result);
     }) 
 
+    // update animeList... add object in animeList array {animeId, status, personalRating}
+    app.patch('/animelist/:id', async(req, res) =>{
+        const id = req.params.id;
+        // console.log(id);
+        // console.log(req.body);
+        // const result = await animeListCollection.find({ _id : new ObjectId(id)}).toArray();
+        const result = await animeListCollection.updateOne(
+            {_id : new ObjectId(id)},
+            {$push: {animeList: req.body}}
+        )
+        console.log(result);
+        res.send(result); 
+    })
+
     // delete animeList
     app.delete('/animelist/:id', async(req, res) =>{
         const id = req.params.id;
         const result = await animeListCollection.deleteOne({ _id : new ObjectId(id)});
         res.send(result);   
-    })
+    }) 
 
 
     // Send a ping to confirm a successful connection
