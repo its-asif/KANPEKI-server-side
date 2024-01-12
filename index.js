@@ -142,6 +142,39 @@ async function run() {
         res.send(result);   
     }) 
 
+    // update with new array of animeList
+    // get array form body and replace old array
+    app.put('/animelist/:id', async(req, res) =>{
+        const id = req.params.id;
+
+        const result = await animeListCollection.updateOne(
+            {_id : new ObjectId(id)},
+            {$set: {animeList: req.body}}
+        )
+        console.log(result)
+        res.send(result); 
+    })
+
+
+    // delete anime from animelist
+    app.delete('/anime/:id/:mal_id', async(req, res) =>{
+        const id = req.params.id;
+        const mal_id = req.params.mal_id;
+        // console.log(id, mal_id, req.body);
+        const result = await animeListCollection.find({ _id : new ObjectId(id)}).toArray();
+        const animeList = result[0].animeList;
+        const index = animeList.findIndex(anime => anime.animeId === mal_id);
+
+        // console.log(index);
+        animeList.splice(index, 1);
+        // console.log(animeList);
+        const updatedAnimeList = await animeListCollection.updateOne(
+            {_id : new ObjectId(id)},
+            {$set: {animeList: animeList}}
+        )
+        
+        res.send(updatedAnimeList);
+    })
 
 
     // Send a ping to confirm a successful connection
